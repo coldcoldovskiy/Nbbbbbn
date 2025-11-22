@@ -1,4 +1,4 @@
-vless://37c4698d-8e01-4660-bf95-b2bde5074ccf@172.232.205.181:87?flow=xtls-rprx-vision&encryption=none&type=raw&security=reality&fp=ios&sni=osxapps.itunes.apple.com&sid=6ba85179e30d4fc2#🇷🇺россия
+vless://d42c146e-2ded-4b4a-8592-6459ac636910@spb.ru.srv.oplcdn.link:8443?security=reality&encryption=none&pbk=SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc&headerType=none&fp=chrome&type=tcp&flow=xtls-rprx-vision&sni=ign.com&sid=6ba85179e30d4fc2#🇷🇺россия
 vless://37c4698d-8e01-4660-bf95-b2bde5074ccf@23.146.184.216:87?flow=xtls-rprx-vision&type=raw&security=reality&fp=ios&sni=osxapps.itunes.apple.com&pbk=OyGxax1037g3nQrsIW0PtXHik3WI1ikOT2pxm9c7fxw&sid=6ba85179e30d4fc2#🇺🇸США
 vless://f7e2a36e-2ded-4519-926f-474a861fe567@41.216.182.6:8443?security=reality&type=tcp&headerType=&path=&host=&sni=robinzon.space&fp=chrome&pbk=SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc&sid=6ba85179e30d4fc2#🇸🇪швеция
 vless://5ec3a039-ea63-4bf9-a848-a65c9bfa66f5@104.26.6.89:443?path=%2Fapi%2Fv1&security=tls&encryption=none&host=gb-021.shenzogmbh.com&fp=chrome&type=ws&sni=gb-021.shenzogmbh.com#🇬🇧Великобритания
