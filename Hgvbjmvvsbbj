@@ -1,5 +1,3 @@
-vless://d8fab1ee-53ba-4f09-a3c3-2189ad5f939a@3d.filesdownloader.ru:443?type=tcp&security=reality&pbk=21akVzin0efn9XtLugyUqN3jVT_5VarKy4cD-0nBcyM&fp=ios&sni=kinopoisk.ru&sid=fa71&spx=%2F&flow=xtls-rprx-vision#🇷🇺россия|YouTube без рекламы
-vless://d15f57ad-20d3-43af-b3fd-d64fcf57bc4f@cn.vpnfreedom.tech:443?type=tcp&security=reality&pbk=tNpq8wMwP969CbOM0uxHpCWnMJzlbaZQ8JJFwR5PmyA&fp=firefox&sni=google.com&sid=cdc9&spx=%2F&flow=xtls-rprx-vision#🇨🇳китай
 vless://37c4698d-8e01-4660-bf95-b2bde5074ccf@23.146.184.216:87?flow=xtls-rprx-vision&type=raw&security=reality&fp=ios&sni=osxapps.itunes.apple.com&pbk=OyGxax1037g3nQrsIW0PtXHik3WI1ikOT2pxm9c7fxw&sid=6ba85179e30d4fc2#🇺🇸США
 vless://f7e2a36e-2ded-4519-926f-474a861fe567@41.216.182.6:8443?security=reality&type=tcp&headerType=&path=&host=&sni=robinzon.space&fp=chrome&pbk=SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc&sid=6ba85179e30d4fc2#🇸🇪швеция
 vless://5ec3a039-ea63-4bf9-a848-a65c9bfa66f5@104.26.6.89:443?path=%2Fapi%2Fv1&security=tls&encryption=none&host=gb-021.shenzogmbh.com&fp=chrome&type=ws&sni=gb-021.shenzogmbh.com#🇬🇧Великобритания
@@ -7,4 +5,4 @@ vless://6967a7f2-e8a7-497e-f72e-c989e9f896d7@91.98.155.220:443?mode=gun&security
 vless://df0680ca-e43c-498d-ed86-8e196eedd012@185.231.205.181:8880?mode=gun&security=none&encryption=none&type=grpc#🇫🇷франция
 vless://638c1918-f6f0-4ecc-85e6-a3ac50ed9c02@157.180.123.25:443?path=/linkws?ed=2560&security=&encryption=none&host=157.180.123.25&type=ws#🇫🇮финляндия
 vless://495f3830-c708-11f0-b189-7f90a930eaf8@sp1.vpnjantit.com:10002?security=tls&type=ws&path=/vpnjantit&encryption=none#🇪🇸испания
-vless://d65cc14c-f53f-4fe2-b262-97856601319c@87.229.97.154:443?security=reality&encryption=none&pbk=e2RLf57Li_-MDZGE9ss1BWPgP54mqRb5PfXhW2jcVVg&fp=ios&allowinsecure=0&type=raw&flow=xtls-rprx-vision&sni=yahoo.com&sid=c39cc7310a#🇩🇪обход 1 t2
+vless://d65cc14c-f53f-4fe2-b262-97856601319c@87.229.97.154:443?security=reality&encryption=none&pbk=e2RLf57Li_-MDZGE9ss1BWPgP54mqRb5PfXhW2jcVVg&fp=ios&allowinsecure=0&type=raw&flow=xtls-rprx-vision&sni=yahoo.com&sid=c39cc7310a#🇩🇪обход 1 (t2)
