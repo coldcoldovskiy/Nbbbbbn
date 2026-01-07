@@ -14,4 +14,3 @@ vless://9c711dd1-b9e4-4265-a05e-eae154d61ef7@84.201.154.84:443?security=reality&
 
 vless://9c711dd1-b9e4-4265-a05e-eae154d61ef7@51.250.32.171:443?security=reality&encryption=none&pbk=5NDQBeOG4yGXBwm5NTzUHwezxLbTiFhW4X061I4ykVk&headerType=none&allowinsecure=0&type=tcp&flow=xtls-rprx-vision&sni=yandex.ru#%23%D0%BE%D0%B1%D1%85%D0%BE%D0%B4%207%7C%D0%BE%D0%BF%D0%B5%D1%80%D0%B0%D1%82%D0%BE%D1%80%20%D1%85%D0%B7
 
-vless://c3ef0f28-7123-4dd5-aa69-6a99b13fa65f@md2.vmelectronics.ru:443?security=reality&encryption=none&pbk=2Prv1-3tutblsIPl_DhQQp1opFzllqAcSPShoHlmr34&headerType=none&fp=qq&allowinsecure=0&type=tcp&flow=xtls-rprx-vision&sni=max.ru&sid=da5f84e85736f625#обход 8|оператор хз
