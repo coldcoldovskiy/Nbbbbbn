@@ -1,0 +1,5561 @@
+[
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "domain": [
+            "max.ru",
+            "geosite:category-ru"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "ip": [
+            "geoip:ru"
+          ],
+          "type": "field",
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "balancerTag": "Super_Balancer"
+        }
+      ],
+      "balancers": [
+        {
+          "tag": "Super_Balancer",
+          "selector": [
+            "proxy"
+          ],
+          "strategy": {
+            "type": "leastLoad",
+            "settings": {
+              "maxRTT": "1s",
+              "expected": 2,
+              "baselines": [
+                "1s"
+              ],
+              "tolerance": 0.01
+            }
+          },
+          "fallbackTag": "direct"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "31.56.185.24",
+              "port": 47010,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "on.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-2",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "31.76.119.36",
+              "port": 47010,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "on.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-3",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "31.76.102.6",
+              "port": 47010,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "on.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-4",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "166.1.89.111",
+              "port": 47010,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "on.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "burstObservatory": {
+      "pingConfig": {
+        "timeout": "3s",
+        "interval": "1m",
+        "sampling": 1,
+        "destination": "https://cp.cloudflare.com/generate_204",
+        "connectivity": ""
+      },
+      "subjectSelector": [
+        "proxy"
+      ]
+    },
+    "remarks": "🇪🇺⚡️Авто-выбор VPN"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "balancerTag": "Super_Balancer"
+        }
+      ],
+      "balancers": [
+        {
+          "tag": "Super_Balancer",
+          "selector": [
+            "proxy"
+          ],
+          "strategy": {
+            "type": "leastLoad",
+            "settings": {
+              "maxRTT": "1s",
+              "expected": 2,
+              "baselines": [
+                "1s"
+              ],
+              "tolerance": 0.01
+            }
+          },
+          "fallbackTag": "direct"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "hysteria",
+        "settings": {
+          "address": "104.143.201.91",
+          "port": 443,
+          "version": 2
+        },
+        "streamSettings": {
+          "network": "hysteria",
+          "hysteriaSettings": {
+            "version": 2,
+            "auth": "af5171a0-0b20-4aea-adcd-f13e8217ae28"
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "test.mcufa.pro",
+            "enableSessionResumption": false,
+            "fingerprint": "firefox",
+            "alpn": [
+              "h3"
+            ]
+          },
+          "finalmask": {
+            "quicParams": {
+              "debug": false,
+              "congestion": "bbr"
+            }
+          }
+        }
+      },
+      {
+        "tag": "proxy-2",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "31.77.153.89",
+              "port": 47005,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "on.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-3",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "31.77.153.94",
+              "port": 47005,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "on.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-4",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "31.76.119.51",
+              "port": 47005,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "on.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-5",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "31.76.119.72",
+              "port": 47005,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "on.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-6",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "multiqq.mcufa.pro",
+              "port": 7443,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "multiqq.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-7",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "statics.mcufa.pro",
+              "port": 444,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "statics.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-8",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "multiqq.mcufa.pro",
+              "port": 445,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "multiqq.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-9",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "keshyou.mcufa.pro",
+              "port": 9445,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "keshyou.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-10",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "keshyou.mcufa.pro",
+              "port": 9446,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "keshyou.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-11",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "keshyou.mcufa.pro",
+              "port": 9442,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "keshyou.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-12",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "keshyou.mcufa.pro",
+              "port": 9443,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "keshyou.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-13",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "keshyou.mcufa.pro",
+              "port": 9444,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "keshyou.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-14",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "keshyou.mcufa.pro",
+              "port": 9447,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "keshyou.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-15",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "keshyou.mcufa.pro",
+              "port": 9441,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "keshyou.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-16",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "xs70.mcufa.pro",
+              "port": 443,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "xhttp",
+          "xhttpSettings": {
+            "mode": "packet-up",
+            "host": "xs70.mcufa.pro",
+            "path": "/api/v1/minecraft178/sync/",
+            "extra": {
+              "xmux": {
+                "cMaxLifetimeMs": 300000,
+                "cMaxReuseTimes": 100,
+                "maxConcurrency": "16-32",
+                "maxConnections": 0,
+                "hKeepAlivePeriod": 30
+              },
+              "uplinkDataKey": "X-Payload",
+              "uplinkHTTPMethod": "GET",
+              "scMaxEachPostBytes": 4096,
+              "uplinkDataPlacement": "header"
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "xs70.mcufa.pro",
+            "enableSessionResumption": false,
+            "fingerprint": "edge",
+            "alpn": [
+              "h2",
+              "http/1.1"
+            ]
+          }
+        }
+      },
+      {
+        "tag": "proxy-17",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "luckyping.mcufa.pro",
+              "port": 8443,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "luckyping.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "burstObservatory": {
+      "pingConfig": {
+        "timeout": "3s",
+        "interval": "1m",
+        "sampling": 1,
+        "destination": "https://cp.cloudflare.com/generate_204",
+        "connectivity": ""
+      },
+      "subjectSelector": [
+        "proxy"
+      ]
+    },
+    "remarks": "🇪🇺⚡️Авто-выбор LTE"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "domain": [
+            "max.ru",
+            "geosite:category-ru"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "ip": [
+            "geoip:ru"
+          ],
+          "type": "field",
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "balancerTag": "Super_Balancer"
+        }
+      ],
+      "balancers": [
+        {
+          "tag": "Super_Balancer",
+          "selector": [
+            "proxy"
+          ],
+          "strategy": {
+            "type": "leastLoad",
+            "settings": {
+              "maxRTT": "1s",
+              "expected": 2,
+              "baselines": [
+                "1s"
+              ],
+              "tolerance": 0.01
+            }
+          },
+          "fallbackTag": "direct"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "obger1.mcufa.pro",
+              "port": 443,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "obger1.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-2",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "obger2.mcufa.pro",
+              "port": 443,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "obger2.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-3",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "31.76.119.51",
+              "port": 47005,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "on.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "proxy-4",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "31.76.119.72",
+              "port": 47005,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "on.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "burstObservatory": {
+      "pingConfig": {
+        "timeout": "3s",
+        "interval": "1m",
+        "sampling": 1,
+        "destination": "https://cp.cloudflare.com/generate_204",
+        "connectivity": ""
+      },
+      "subjectSelector": [
+        "proxy"
+      ]
+    },
+    "remarks": "🇩🇪⚡️Авто-выбор Германия"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "domain": [
+            "max.ru",
+            "www.gosuslugi.ru",
+            "geosite:category-ru"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "ip": [
+            "geoip:ru"
+          ],
+          "type": "field",
+          "outboundTag": "direct"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "lost.day",
+              "port": 47010,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "on.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "chrome"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "remarks": "⬇️ Выбери локацию"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "domain": [
+            "max.ru",
+            "www.gosuslugi.ru",
+            "geosite:category-ru"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "ip": [
+            "geoip:ru"
+          ],
+          "type": "field",
+          "outboundTag": "direct"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "31.77.153.89",
+              "port": 47005,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "on.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "remarks": "🇩🇪 Германия ⭐ "
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "direct"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "gemini.jykvpn.com",
+              "port": 80,
+              "users": [
+                {
+                  "id": "c4aa76e2-7229-4764-ab9a-d69a5691d4f1",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "grpc",
+          "grpcSettings": {
+            "serviceName": "cdn",
+            "authority": "",
+            "mode": false
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "cdn.juk.su",
+            "fingerprint": "firefox",
+            "alpn": [
+              "h2"
+            ]
+          }
+        },
+        "mux": {
+          "enabled": true,
+          "concurrency": 8,
+          "xudpConcurrency": 8,
+          "xudpProxyUDP443": "reject"
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "remarks": "🇵🇱  Польша ⭐"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "tag": "RULE_BITTORRENT",
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "tag": "RULE_PRIVATE_IP",
+          "type": "field",
+          "outboundTag": "block"
+        },
+        {
+          "tag": "RULE_PRIVATE_DOMAIN",
+          "type": "field",
+          "domain": [
+            "geosite:private"
+          ],
+          "outboundTag": "block"
+        },
+        {
+          "tag": "RULE_PUSH_DIRECT",
+          "type": "field",
+          "domain": [
+            "domain:mtalk.google.com",
+            "domain:push.apple.com",
+            "domain:api.push.apple.com",
+            "domain:push-apple.com.akadns.net"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "tag": "RULE_RU_TLD",
+          "type": "field",
+          "domain": [
+            "regexp:.+\\.ru$",
+            "regexp:.+\\.su$",
+            "regexp:.+\\.by$",
+            "regexp:.+\\.xn--p1ai$"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "tag": "RULE_YANDEX",
+          "type": "field",
+          "domain": [
+            "regexp:^(.+\\.)?yandex\\.(aero|az|by|cloud|co\\.il|com|com\\.am|com\\.ge|com\\.tr|com\\.ua|de|ee|eu|fi|fr|jobs|kg|kz|lt|lv|md|net|org|pl|ru|st|sx|tj|tm|tr|ua|uz)$",
+            "domain:yandex.plus",
+            "domain:yastatic.net"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "tag": "RULE_VK",
+          "type": "field",
+          "domain": [
+            "regexp:^(.+\\.)?vk\\.(com|ru|me|cc|link|video|music|company)$",
+            "domain:vkontakte.com",
+            "domain:vk-cdn.net",
+            "domain:vk-apps.com",
+            "domain:vk-portal.net",
+            "domain:userapi.com",
+            "domain:vkuser.net",
+            "domain:vkuseraudio.com",
+            "domain:vkuseraudio.net",
+            "domain:vkuservideo.com",
+            "domain:vkuservideo.net",
+            "domain:vkuserlive.com",
+            "domain:vkuserlive.net",
+            "domain:vkpay.io",
+            "domain:vkpay.com",
+            "domain:vkpay.app",
+            "domain:vkcs.cloud"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "tag": "RULE_OK",
+          "type": "field",
+          "domain": [
+            "regexp:^(.+\\.)?ok(cdn)?\\.(ru|me)$",
+            "domain:mycdn.me",
+            "domain:tamtam.chat"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "tag": "RULE_MAIL_RU",
+          "type": "field",
+          "domain": [
+            "regexp:^(.+\\.)?mail\\.ru$",
+            "domain:my.com",
+            "domain:my.games",
+            "domain:vmailru.net",
+            "domain:smailru.net"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "tag": "RULE_OZON",
+          "type": "field",
+          "domain": [
+            "regexp:^(.+\\.)?ozon(ru)?\\.(ru|com|by|kz|kg|tech|travel|tm|li|express|dev|me|eu|com\\.by|com\\.kz|co\\.il)$",
+            "regexp:^(.+\\.)?o3(t|team)?\\.ru$",
+            "domain:ozone.ru",
+            "domain:ozonusercontent.com",
+            "domain:ozonglobalevents.com"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "tag": "RULE_WILDBERRIES",
+          "type": "field",
+          "domain": [
+            "regexp:^(.+\\.)?wildberries\\.(ru|am|by|co\\.il|es|eu|ge|kg|kz|lt|tj|tm|uz)$",
+            "regexp:^(.+\\.)?wb\\.(ru|am|kg|kz)$",
+            "regexp:^(.+\\.)?wbstatic\\.(net|ru)$",
+            "domain:paywb.com",
+            "domain:wibes.com"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "tag": "RULE_RU_BRANDS",
+          "type": "field",
+          "domain": [
+            "domain:sberbank.com",
+            "domain:sberbank-tele.com",
+            "domain:sberzvuk.com",
+            "domain:2gis.com",
+            "domain:avito.st",
+            "domain:ozon.st",
+            "domain:t-tech.team",
+            "domain:algoritmika.org",
+            "domain:umschool.net",
+            "domain:lenta.com",
+            "domain:okko.tv",
+            "domain:okko.sport",
+            "domain:more.tv",
+            "domain:premier.one",
+            "domain:rt.com",
+            "domain:kaspersky.com",
+            "domain:drweb.com",
+            "domain:2ip.io",
+            "domain:fix-price.com",
+            "domain:boosty.to",
+            "domain:donationalerts.com",
+            "domain:youla.io",
+            "domain:warehouse.domains",
+            "domain:mp.world"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "ip": [
+            "geoip:ru"
+          ],
+          "tag": "RULE_RU_GEOIP",
+          "type": "field",
+          "outboundTag": "direct"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "ru.jykvpn.com",
+              "port": 80,
+              "users": [
+                {
+                  "id": "c4aa76e2-7229-4764-ab9a-d69a5691d4f1",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "grpc",
+          "grpcSettings": {
+            "serviceName": "cdn",
+            "authority": "",
+            "mode": false
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "cdn.juk.su",
+            "fingerprint": "firefox",
+            "alpn": [
+              "h2"
+            ]
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "remarks": "🇦🇱 Албания 🛑"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "domain": [
+            "max.ru",
+            "www.gosuslugi.ru",
+            "geosite:category-ru"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "ip": [
+            "geoip:ru"
+          ],
+          "type": "field",
+          "outboundTag": "direct"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "31.56.185.24",
+              "port": 47010,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "on.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "remarks": "🇳🇱 Нидерланды"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "tag": "RULE_BITTORRENT",
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "tag": "RULE_PRIVATE_IP",
+          "type": "field",
+          "outboundTag": "block"
+        },
+        {
+          "tag": "RULE_PRIVATE_DOMAIN",
+          "type": "field",
+          "domain": [
+            "geosite:private"
+          ],
+          "outboundTag": "block"
+        },
+        {
+          "tag": "RULE_PUSH_DIRECT",
+          "type": "field",
+          "domain": [
+            "domain:mtalk.google.com",
+            "domain:push.apple.com",
+            "domain:api.push.apple.com",
+            "domain:push-apple.com.akadns.net"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "tag": "RULE_RU_TLD",
+          "type": "field",
+          "domain": [
+            "regexp:.+\\.ru$",
+            "regexp:.+\\.su$",
+            "regexp:.+\\.by$",
+            "regexp:.+\\.xn--p1ai$"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "tag": "RULE_YANDEX",
+          "type": "field",
+          "domain": [
+            "regexp:^(.+\\.)?yandex\\.(aero|az|by|cloud|co\\.il|com|com\\.am|com\\.ge|com\\.tr|com\\.ua|de|ee|eu|fi|fr|jobs|kg|kz|lt|lv|md|net|org|pl|ru|st|sx|tj|tm|tr|ua|uz)$",
+            "domain:yandex.plus",
+            "domain:yastatic.net"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "tag": "RULE_VK",
+          "type": "field",
+          "domain": [
+            "regexp:^(.+\\.)?vk\\.(com|ru|me|cc|link|video|music|company)$",
+            "domain:vkontakte.com",
+            "domain:vk-cdn.net",
+            "domain:vk-apps.com",
+            "domain:vk-portal.net",
+            "domain:userapi.com",
+            "domain:vkuser.net",
+            "domain:vkuseraudio.com",
+            "domain:vkuseraudio.net",
+            "domain:vkuservideo.com",
+            "domain:vkuservideo.net",
+            "domain:vkuserlive.com",
+            "domain:vkuserlive.net",
+            "domain:vkpay.io",
+            "domain:vkpay.com",
+            "domain:vkpay.app",
+            "domain:vkcs.cloud"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "tag": "RULE_OK",
+          "type": "field",
+          "domain": [
+            "regexp:^(.+\\.)?ok(cdn)?\\.(ru|me)$",
+            "domain:mycdn.me",
+            "domain:tamtam.chat"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "tag": "RULE_MAIL_RU",
+          "type": "field",
+          "domain": [
+            "regexp:^(.+\\.)?mail\\.ru$",
+            "domain:my.com",
+            "domain:my.games",
+            "domain:vmailru.net",
+            "domain:smailru.net"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "tag": "RULE_OZON",
+          "type": "field",
+          "domain": [
+            "regexp:^(.+\\.)?ozon(ru)?\\.(ru|com|by|kz|kg|tech|travel|tm|li|express|dev|me|eu|com\\.by|com\\.kz|co\\.il)$",
+            "regexp:^(.+\\.)?o3(t|team)?\\.ru$",
+            "domain:ozone.ru",
+            "domain:ozonusercontent.com",
+            "domain:ozonglobalevents.com"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "tag": "RULE_WILDBERRIES",
+          "type": "field",
+          "domain": [
+            "regexp:^(.+\\.)?wildberries\\.(ru|am|by|co\\.il|es|eu|ge|kg|kz|lt|tj|tm|uz)$",
+            "regexp:^(.+\\.)?wb\\.(ru|am|kg|kz)$",
+            "regexp:^(.+\\.)?wbstatic\\.(net|ru)$",
+            "domain:paywb.com",
+            "domain:wibes.com"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "tag": "RULE_RU_BRANDS",
+          "type": "field",
+          "domain": [
+            "domain:sberbank.com",
+            "domain:sberbank-tele.com",
+            "domain:sberzvuk.com",
+            "domain:2gis.com",
+            "domain:avito.st",
+            "domain:ozon.st",
+            "domain:t-tech.team",
+            "domain:algoritmika.org",
+            "domain:umschool.net",
+            "domain:lenta.com",
+            "domain:okko.tv",
+            "domain:okko.sport",
+            "domain:more.tv",
+            "domain:premier.one",
+            "domain:rt.com",
+            "domain:kaspersky.com",
+            "domain:drweb.com",
+            "domain:2ip.io",
+            "domain:fix-price.com",
+            "domain:boosty.to",
+            "domain:donationalerts.com",
+            "domain:youla.io",
+            "domain:warehouse.domains",
+            "domain:mp.world"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "ip": [
+            "geoip:ru"
+          ],
+          "tag": "RULE_RU_GEOIP",
+          "type": "field",
+          "outboundTag": "direct"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "swre.jykvpn.com",
+              "port": 80,
+              "users": [
+                {
+                  "id": "c4aa76e2-7229-4764-ab9a-d69a5691d4f1",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "grpc",
+          "grpcSettings": {
+            "serviceName": "cdn",
+            "authority": "",
+            "mode": false
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "cdn.juk.su",
+            "fingerprint": "firefox",
+            "alpn": [
+              "h2"
+            ]
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "remarks": "🇸🇪  Швеция"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "block"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "31.59.211.244",
+              "port": 47005,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "on.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "chrome"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "remarks": "🇵🇱Польша"
+  },
+  {
+    "dns": {
+      "tag": "dns-in",
+      "hosts": {
+        "domain:googleapis.cn": "googleapis.com",
+        "ee-nf.reddotcorp.org": "185.155.55.3"
+      },
+      "servers": [
+        "1.1.1.1",
+        {
+          "address": "tcp+local://8.8.8.8:53",
+          "domains": [
+            "regexp:.*"
+          ]
+        },
+        {
+          "address": "https://ee-nf.reddotcorp.org/dns-query",
+          "domains": [
+            "regexp:.*"
+          ],
+          "skipFallback": true
+        },
+        {
+          "address": "fakedns",
+          "domains": [
+            "regexp:.*"
+          ],
+          "finalQuery": true,
+          "skipFallback": true
+        }
+      ],
+      "serveStale": true,
+      "disableCache": false,
+      "queryStrategy": "UseIPv4",
+      "disableFallback": true,
+      "serveExpiredTTL": 600,
+      "enableParallelQuery": false,
+      "disableFallbackIfMatch": true
+    },
+    "log": {
+      "loglevel": "debug"
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "routing": {
+      "rules": [
+        {
+          "port": "443",
+          "type": "field",
+          "domain": [
+            "full:ee-nf.reddotcorp.org"
+          ],
+          "network": "tcp",
+          "balancerTag": "ee-direct-fallback"
+        },
+        {
+          "ip": [
+            "185.155.55.3/32"
+          ],
+          "port": "443",
+          "type": "field",
+          "network": "tcp",
+          "balancerTag": "ee-direct-fallback"
+        },
+        {
+          "port": "53",
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "nf-adguard-dns-out"
+        },
+        {
+          "ip": [
+            "1.1.1.0/24",
+            "1.0.0.0/24",
+            "8.8.8.0/24",
+            "8.8.4.0/24",
+            "2606:4700:4700::1111",
+            "2606:4700:4700::1001",
+            "2606:4700:4700::1112",
+            "2606:4700:4700::1002",
+            "2606:4700:4700::1113",
+            "2606:4700:4700::1003",
+            "2001:4860:4860::8888",
+            "2001:4860:4860::8844"
+          ],
+          "type": "field",
+          "network": "tcp,udp",
+          "balancerTag": "ee-direct-fallback"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-in"
+          ],
+          "balancerTag": "ee-direct-fallback"
+        },
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "domain": [
+            "domain:mtalk.google.com",
+            "domain:push.apple.com",
+            "domain:api.push.apple.com",
+            "domain:push-apple.com.akadns.net",
+            "domain:*-courier.push.apple.com"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "ip": [
+            "17.0.0.0/8"
+          ],
+          "type": "field",
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "domain": [
+            "domain:2gis.ae",
+            "domain:2gis.am",
+            "domain:2gis.az",
+            "domain:2gis.by",
+            "domain:2gis.com",
+            "domain:2gis.com.cy",
+            "domain:2gis.cz",
+            "domain:2gis.ge",
+            "domain:2gis.kg",
+            "domain:2gis.kz",
+            "domain:2gis.ru",
+            "domain:2gis.tj",
+            "domain:2gis.ua",
+            "domain:2gis.uz",
+            "domain:avito.ru",
+            "domain:avito.st",
+            "domain:ok.ru",
+            "domain:okcdn.ru",
+            "domain:mycdn.me",
+            "full:st-ok-pts.cdn-vk.ru",
+            "full:st-ok.cdn-vk.ru",
+            "domain:ozon.by",
+            "domain:ozon.com",
+            "domain:ozon.com.by",
+            "domain:ozon.com.kz",
+            "domain:ozon.kz",
+            "domain:ozon.ru",
+            "domain:ozon.tm",
+            "domain:ozone.ru",
+            "domain:ozonru.me",
+            "domain:ozonusercontent.com",
+            "domain:geobasket.ru",
+            "domain:paywb.com",
+            "domain:rwb.ru",
+            "domain:wb-basket.ru",
+            "domain:wb.ru",
+            "domain:wbbasket.ru",
+            "domain:wbpay.ru",
+            "domain:wibes.ru",
+            "domain:wildberries.ru",
+            "geosite:category-gov-ru",
+            "geosite:vk",
+            "geosite:yandex",
+            "regexp:^(.+\\.)?mail\\.ru$",
+            "regexp:^(.+\\.)?yandex\\.(aero|az|by|cloud|co\\.il|com(\\.am|\\.ge|\\.ru|\\.tr|\\.ua)?|de|ee|eu|fi|fr|jobs|kg|kz|lt|lv|md|net|org|pl|ru|st|sx|tj|tm|tr|ua|uz)$",
+            "regexp:^(.+\\.)?vk\\.(com|ru)$",
+            "regexp:^(.+\\.)?ok(cdn)?\\.ru$",
+            "regexp:^(.+\\.)?2gis\\.(ae|am|az|by|com(\\.cy)?|cz|ge|kg|kz|ru|tj|ua|uz)$",
+            "regexp:^(.+\\.)?vtb\\.ru$",
+            "regexp:^(.+\\.)?rzd\\.ru$",
+            "regexp:^(.+\\.)?gosuslugi\\.ru$",
+            "regexp:^(.+\\.)?ozon(e)?\\.ru$",
+            "regexp:^(.+\\.)?wb\\.ru$",
+            "regexp:^(.+\\.)?wildberries\\.ru$",
+            "regexp:^(.+\\.)?kinopoisk\\.ru$",
+            "regexp:^(.+\\.)?alfa.*\\.ru$",
+            "regexp:^(.+\\.)?t(2|ele2)\\.ru$",
+            "regexp:^(.+\\.)?lemanapro\\.ru$",
+            "regexp:^(.+\\.)?rutube\\.ru$",
+            "regexp:^(.+\\.)?mts.*\\.ru$",
+            "regexp:^(.+\\.)?dzen.*\\.ru$",
+            "regexp:^(.+\\.)?x5.*\\.ru$",
+            "regexp:^(.+\\.)?beeline\\.ru$",
+            "regexp:^(.+\\.)?megafon\\.ru$",
+            "regexp:^alfa(-?[a-z]+)?\\.(ru|com|biz|st)$",
+            "regexp:^api\\.(a\\.mts|avito|expf|max|mindbox)\\.ru$",
+            "regexp:^vtb(-?[a-z0-9]+)?\\.(ru|com|in|digital|site|bank\\.in|fut\\.ru|corp\\.ru|promo)$",
+            "regexp:^[0-9]+\\.mc\\.yandex\\.ru$",
+            "regexp:^[0-9]{2}\\.img\\.avito\\.st$",
+            "regexp:^sun[0-9]+(-[0-9]+)?\\.userapi\\.com$",
+            "regexp:^sso-app[0-9]+\\.vtb\\.ru$",
+            "domain:stbid.ru",
+            "domain:1c-bitrix.ru",
+            "domain:1c.ru",
+            "domain:1cfresh.com",
+            "domain:1cloud.ru",
+            "domain:1internet.tv",
+            "domain:300.ya.ru",
+            "domain:47news.ru",
+            "domain:4meeting.me",
+            "domain:5ka.ru",
+            "domain:5post.market",
+            "domain:742231.ms.ok.ru",
+            "domain:8ofpsm7zqu.a.trbcdn.net",
+            "domain:a.auth-nsdi.ru",
+            "domain:a.res-nsdi.ru",
+            "domain:abr.ru",
+            "domain:aclub.ru",
+            "domain:adriver.ru",
+            "domain:gov.ru",
+            "domain:aeroflot.ru",
+            "domain:alformacap.com",
+            "domain:alformacapital.com",
+            "domain:ams2-cdn.2gis.com",
+            "domain:auth-nsdi.ru",
+            "domain:auto.ru",
+            "domain:av.ru",
+            "domain:b.auth-nsdi.ru",
+            "domain:b.res-nsdi.ru",
+            "domain:baltbank.ru",
+            "domain:banka-ui.dev",
+            "domain:banki.ru",
+            "domain:bankline.ru",
+            "domain:flocktory.com",
+            "domain:beta-bank.com",
+            "domain:bitrix24.ru",
+            "domain:boosty.to",
+            "domain:max.ru",
+            "domain:bronevik.com",
+            "domain:mail.ru",
+            "domain:cdn-tinkoff.ru",
+            "domain:lemanapro.ru",
+            "domain:oversecure.org",
+            "domain:uxfeedback.ru",
+            "domain:serverstats.ru",
+            "domain:cdnsix.vk-com.ru",
+            "domain:speedstream.ru",
+            "domain:chizhik.club",
+            "domain:citydrive.ru",
+            "domain:clstorage.net",
+            "domain:mts.ru",
+            "domain:rzd.ru",
+            "domain:yadro.ru",
+            "domain:credistory.ru",
+            "domain:csat.ru",
+            "domain:cscampus.ru",
+            "domain:d-assets.2gis.ru",
+            "domain:d5de4k0ri8jba7ucdbt6.apigw.yandexcloud.net",
+            "domain:dbo-dengi.online",
+            "domain:dellin.ru",
+            "domain:disk.2gis.com",
+            "domain:dixy.ru",
+            "domain:dnevnik.ru",
+            "domain:dns-shop.ru",
+            "domain:dodopizza.ru",
+            "domain:dom.ru",
+            "domain:domclick.ru",
+            "domain:donationalerts.com",
+            "domain:drweb.ru",
+            "domain:e5.ru",
+            "domain:edadeal.io",
+            "domain:edadeal.ru",
+            "domain:vk.com",
+            "domain:targetads.io",
+            "domain:fastvps.ru",
+            "domain:fb-cdn.premier.one",
+            "domain:finuslugi.ru",
+            "domain:fivepost.ru",
+            "domain:fix-price.com",
+            "domain:gazeta.ru",
+            "domain:gazprombank.tech",
+            "domain:gazprompay.ru",
+            "domain:get4click.ru",
+            "domain:gorodpay.ru",
+            "domain:gpb.ru",
+            "domain:gpbmobile.ru",
+            "domain:gpmdi.ru",
+            "domain:hh.ru",
+            "domain:idx5.ru",
+            "domain:imgsmail.ru",
+            "domain:investalfabank.com",
+            "domain:iz.ru",
+            "domain:jivo.ru",
+            "domain:jivochat.com",
+            "domain:jivosite.com",
+            "domain:jsons.injector.3ebra.net",
+            "domain:jua5fcnytm.a.trbcdn.net",
+            "domain:jx5.ru",
+            "domain:kaspersky.com",
+            "domain:kaspersky.ru",
+            "domain:kazanexpress.ru",
+            "domain:kommersant.ru",
+            "domain:kp.ru",
+            "domain:krasyar.ru",
+            "domain:krd.ru",
+            "domain:kuper.ru",
+            "domain:lenta.com",
+            "domain:lenta.ru",
+            "domain:lmru.tech",
+            "domain:magnit-ru.injector.3ebra.net",
+            "domain:magnit.ru",
+            "domain:tinkoff.ru",
+            "domain:megafon.ru",
+            "domain:megamarket.ru",
+            "domain:megamarket.tech",
+            "domain:memealerts.com",
+            "domain:alfabank.ru",
+            "domain:mirpayonline.ru",
+            "domain:miya-news.online",
+            "domain:mm.ru",
+            "domain:mnogolososya.ru",
+            "domain:moex.com",
+            "domain:mtscdn.ru",
+            "domain:mtsdengi.ru",
+            "domain:myapelsin.ru",
+            "domain:mymts.ru",
+            "domain:netmonet.co",
+            "domain:nspk.ru",
+            "domain:okko.sport",
+            "domain:okko.tv",
+            "domain:okolo.app",
+            "domain:oneme.ru",
+            "domain:perekrestok.ru",
+            "domain:rutubelist.ru",
+            "domain:pochta.ru",
+            "domain:userapi.com",
+            "domain:psbank.ru",
+            "domain:psblog.ru",
+            "domain:adhigh.net",
+            "domain:qms.ru",
+            "domain:rambler.ru",
+            "domain:skcrtxr.com",
+            "domain:rbc.ru",
+            "domain:receive-sentry.lmru.tech",
+            "domain:res-nsdi.ru",
+            "domain:rostelecom.ru",
+            "domain:rshb.ru",
+            "domain:rt.ru",
+            "domain:rtbcdn.ru",
+            "domain:russiacalling.com",
+            "domain:rustore.ru",
+            "domain:rzd-bonus.ru",
+            "domain:s3.yandex.net",
+            "domain:sbermarket.ru",
+            "domain:sbermegamarket.ru",
+            "domain:sbermobile.ru",
+            "domain:sbpgpb.ru",
+            "domain:servicepipe.ru",
+            "domain:sistema-capital.com",
+            "domain:spvb.ru",
+            "domain:okcdn.ru",
+            "domain:statad.ru",
+            "domain:beeline.ru",
+            "domain:stats.vk-portal.net",
+            "domain:svoy.academy",
+            "domain:tamtam.chat",
+            "domain:taximaxim.ru",
+            "domain:taxsee.com",
+            "domain:tbank-online.com",
+            "domain:timeweb.cloud",
+            "domain:timeweb.com",
+            "domain:tips.tips",
+            "domain:tns-counter.ru",
+            "domain:tnt-online.ru",
+            "domain:tochka-tech.com",
+            "domain:tochka.com",
+            "domain:top-fwz1.mail.ru",
+            "domain:topdelivery.ru",
+            "domain:yastatic.net",
+            "domain:trbcdn.net",
+            "domain:tsx.x5static.net",
+            "domain:tu-tu.ru",
+            "domain:tutu.ru",
+            "domain:usedesk.ru",
+            "domain:vgtrk.ru",
+            "domain:victoria-group.ru",
+            "domain:volnamobile.ru",
+            "domain:wcm.weborama-tech.ru",
+            "domain:web-static.mindbox.ru",
+            "domain:whoosh.bike",
+            "domain:cbonds.ru",
+            "domain:windsurf.com",
+            "domain:wink.ru",
+            "domain:ws-api.oneme.ru",
+            "domain:vulpine.email",
+            "domain:cikrf.ru",
+            "domain:magnit.com",
+            "domain:x5.ru",
+            "domain:x5.tech",
+            "domain:yota.ru",
+            "domain:youla-web-static.mrgcdn.ru",
+            "domain:youla.io",
+            "domain:youla.ru",
+            "domain:zentotem.net",
+            "domain:xn----7sb7akeedqd.xn--p1ai",
+            "domain:xn--80aacoonefzg3am8b1fsb.xn--p1ai",
+            "domain:xn--90ab2c.xn--p1ai",
+            "domain:xn--90aifd0aza.site",
+            "domain:xn--b1aew.xn--p1ai"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "balancerTag": "ee-direct-fallback"
+        }
+      ],
+      "balancers": [
+        {
+          "tag": "ee-direct-fallback",
+          "selector": [
+            "proxy"
+          ],
+          "strategy": {
+            "type": "leastLoad",
+            "settings": {
+              "maxRTT": "8000ms",
+              "expected": 1,
+              "baselines": [
+                "3s"
+              ],
+              "tolerance": 0.5
+            }
+          },
+          "fallbackTag": "ee-fallback"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic",
+            "fakedns"
+          ],
+          "metadataOnly": false
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic",
+            "fakedns"
+          ],
+          "metadataOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "ee.puflino.com",
+              "port": 8443,
+              "users": [
+                {
+                  "id": "b1539bb6-f7b8-4254-bd3b-32f17d91da9c",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "ee-nf.reddotcorp.org",
+            "publicKey": "ApMfbcEyBOve6DxXoBNVu3bCCzQ7XCEYB4ummsDtTBE",
+            "shortId": "661766b2bcef440a",
+            "fingerprint": "firefox"
+          }
+        },
+        "mux": {
+          "enabled": true,
+          "concurrency": -1,
+          "xudpConcurrency": 4,
+          "xudpProxyUDP443": "allow"
+        }
+      },
+      {
+        "tag": "ee-fallback",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "103.24.207.43",
+              "port": 8443,
+              "users": [
+                {
+                  "id": "b1539bb6-f7b8-4254-bd3b-32f17d91da9c",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "ee-nf.reddotcorp.org",
+            "publicKey": "ApMfbcEyBOve6DxXoBNVu3bCCzQ7XCEYB4ummsDtTBE",
+            "shortId": "661766b2bcef440a",
+            "fingerprint": "firefox"
+          }
+        },
+        "mux": {
+          "enabled": true,
+          "concurrency": -1,
+          "xudpConcurrency": 4,
+          "xudpProxyUDP443": "allow"
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom",
+        "streamSettings": {
+          "sockopt": {
+            "domainStrategy": "ForceIPv4"
+          }
+        }
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole",
+        "settings": {
+          "response": {
+            "type": "http"
+          }
+        }
+      },
+      {
+        "tag": "nf-adguard-dns-out",
+        "protocol": "dns",
+        "settings": {
+          "nonIPQuery": "reject"
+        }
+      }
+    ],
+    "burstObservatory": {
+      "pingConfig": {
+        "timeout": "3s",
+        "interval": "30s",
+        "sampling": 2,
+        "destination": "http://www.gstatic.com/generate_204",
+        "connectivity": ""
+      },
+      "subjectSelector": [
+        "proxy",
+        "ee-fallback"
+      ]
+    },
+    "remarks": "🇪🇪 Эстония ",
+    "meta": {
+      "serverDescription": "Для WiFi"
+    }
+  },
+  {
+    "dns": {
+      "tag": "dns-in",
+      "hosts": {
+        "vextor.win": "103.24.207.43",
+        "usa-nf.reddotcorp.org": "23.237.193.202"
+      },
+      "servers": [
+        {
+          "address": "https://usa-nf.reddotcorp.org/dns-query",
+          "domains": [
+            "regexp:.*"
+          ],
+          "skipFallback": true
+        },
+        {
+          "tag": "us-doh-bridge-retry",
+          "address": "https://usa-nf.reddotcorp.org/dns-query",
+          "domains": [
+            "regexp:.*"
+          ],
+          "skipFallback": true
+        },
+        {
+          "address": "fakedns",
+          "domains": [
+            "regexp:.*"
+          ],
+          "finalQuery": true,
+          "skipFallback": true
+        }
+      ],
+      "queryStrategy": "UseIPv4",
+      "disableFallback": true,
+      "enableParallelQuery": false,
+      "disableFallbackIfMatch": true
+    },
+    "log": {
+      "loglevel": "error"
+    },
+    "fakedns": [
+      {
+        "ipPool": "198.18.0.0/15",
+        "poolSize": 65535
+      }
+    ],
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "network": "tcp",
+          "inboundTag": [
+            "us-doh-bridge-retry"
+          ],
+          "outboundTag": "us-fallback"
+        },
+        {
+          "port": "443",
+          "type": "field",
+          "domain": [
+            "full:usa-nf.reddotcorp.org"
+          ],
+          "network": "tcp",
+          "balancerTag": "us-direct-first"
+        },
+        {
+          "ip": [
+            "23.237.193.202/32"
+          ],
+          "port": "443",
+          "type": "field",
+          "network": "tcp",
+          "balancerTag": "us-direct-first"
+        },
+        {
+          "port": "53",
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "nf-adguard-dns-out"
+        },
+        {
+          "port": "443",
+          "type": "field",
+          "domain": [
+            "geosite:youtube",
+            "domain:youtube.com",
+            "domain:youtu.be",
+            "domain:youtube-nocookie.com",
+            "domain:googlevideo.com",
+            "domain:ytimg.com",
+            "domain:ggpht.com",
+            "domain:youtubei.googleapis.com",
+            "domain:youtube.googleapis.com",
+            "domain:youtubeembeddedplayer.googleapis.com"
+          ],
+          "network": "udp",
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "domain": [
+            "geosite:youtube",
+            "domain:youtube.com",
+            "domain:youtu.be",
+            "domain:youtube-nocookie.com",
+            "domain:youtubekids.com",
+            "domain:youtubeeducation.com",
+            "domain:withyoutube.com",
+            "domain:yt.be",
+            "domain:ytimg.com",
+            "domain:googlevideo.com",
+            "domain:ggpht.com",
+            "domain:youtubei.googleapis.com",
+            "domain:youtube.googleapis.com",
+            "domain:youtubeembeddedplayer.googleapis.com"
+          ],
+          "network": "tcp,udp",
+          "ruleTag": "YOUTUBE_DIRECT_BRIDGE",
+          "outboundTag": "yt-direct-datacheap"
+        },
+        {
+          "ip": [
+            "66.22.192.0/18"
+          ],
+          "type": "field",
+          "network": "tcp,udp",
+          "ruleTag": "DISCORD_BRIDGE_IP",
+          "outboundTag": "yt-direct-datacheap"
+        },
+        {
+          "type": "field",
+          "domain": [
+            "geosite:discord",
+            "domain:discord.com",
+            "domain:discord.gg",
+            "domain:discord.media",
+            "domain:discordapp.com",
+            "domain:discordapp.net",
+            "domain:discordcdn.com",
+            "full:discord-attachments-uploads-prd.storage.googleapis.com"
+          ],
+          "network": "tcp,udp",
+          "ruleTag": "DISCORD_BRIDGE_DOMAINS",
+          "outboundTag": "yt-direct-datacheap"
+        },
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "domain": [
+            "domain:mtalk.google.com",
+            "domain:push.apple.com",
+            "domain:api.push.apple.com",
+            "domain:push-apple.com.akadns.net",
+            "domain:*-courier.push.apple.com"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "ip": [
+            "17.0.0.0/8"
+          ],
+          "type": "field",
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "domain": [
+            "domain:2gis.ae",
+            "domain:2gis.am",
+            "domain:2gis.az",
+            "domain:2gis.by",
+            "domain:2gis.com",
+            "domain:2gis.com.cy",
+            "domain:2gis.cz",
+            "domain:2gis.ge",
+            "domain:2gis.kg",
+            "domain:2gis.kz",
+            "domain:2gis.ru",
+            "domain:2gis.tj",
+            "domain:2gis.ua",
+            "domain:2gis.uz",
+            "domain:avito.ru",
+            "domain:avito.st",
+            "domain:ok.ru",
+            "domain:okcdn.ru",
+            "domain:mycdn.me",
+            "full:st-ok-pts.cdn-vk.ru",
+            "full:st-ok.cdn-vk.ru",
+            "domain:ozon.by",
+            "domain:ozon.com",
+            "domain:ozon.com.by",
+            "domain:ozon.com.kz",
+            "domain:ozon.kz",
+            "domain:ozon.ru",
+            "domain:ozon.tm",
+            "domain:ozone.ru",
+            "domain:ozonru.me",
+            "domain:ozonusercontent.com",
+            "domain:geobasket.ru",
+            "domain:paywb.com",
+            "domain:rwb.ru",
+            "domain:wb-basket.ru",
+            "domain:wb.ru",
+            "domain:wbbasket.ru",
+            "domain:wbpay.ru",
+            "domain:wibes.ru",
+            "domain:wildberries.ru",
+            "geosite:category-gov-ru",
+            "geosite:vk",
+            "geosite:yandex",
+            "regexp:^(.+\\.)?mail\\.ru$",
+            "regexp:^(.+\\.)?yandex\\.(aero|az|by|cloud|co\\.il|com(\\.am|\\.ge|\\.ru|\\.tr|\\.ua)?|de|ee|eu|fi|fr|jobs|kg|kz|lt|lv|md|net|org|pl|ru|st|sx|tj|tm|tr|ua|uz)$",
+            "regexp:^(.+\\.)?vk\\.(com|ru)$",
+            "regexp:^(.+\\.)?ok(cdn)?\\.ru$",
+            "regexp:^(.+\\.)?2gis\\.(ae|am|az|by|com(\\.cy)?|cz|ge|kg|kz|ru|tj|ua|uz)$",
+            "regexp:^(.+\\.)?vtb\\.ru$",
+            "regexp:^(.+\\.)?rzd\\.ru$",
+            "regexp:^(.+\\.)?gosuslugi\\.ru$",
+            "regexp:^(.+\\.)?ozon(e)?\\.ru$",
+            "regexp:^(.+\\.)?wb\\.ru$",
+            "regexp:^(.+\\.)?wildberries\\.ru$",
+            "regexp:^(.+\\.)?kinopoisk\\.ru$",
+            "regexp:^(.+\\.)?alfa.*\\.ru$",
+            "regexp:^(.+\\.)?t(2|ele2)\\.ru$",
+            "regexp:^(.+\\.)?lemanapro\\.ru$",
+            "regexp:^(.+\\.)?rutube\\.ru$",
+            "regexp:^(.+\\.)?mts.*\\.ru$",
+            "regexp:^(.+\\.)?dzen.*\\.ru$",
+            "regexp:^(.+\\.)?x5.*\\.ru$",
+            "regexp:^(.+\\.)?beeline\\.ru$",
+            "regexp:^(.+\\.)?megafon\\.ru$",
+            "regexp:^alfa(-?[a-z]+)?\\.(ru|com|biz|st)$",
+            "regexp:^api\\.(a\\.mts|avito|expf|max|mindbox)\\.ru$",
+            "regexp:^vtb(-?[a-z0-9]+)?\\.(ru|com|in|digital|site|bank\\.in|fut\\.ru|corp\\.ru|promo)$",
+            "regexp:^[0-9]+\\.mc\\.yandex\\.ru$",
+            "regexp:^[0-9]{2}\\.img\\.avito\\.st$",
+            "regexp:^sun[0-9]+(-[0-9]+)?\\.userapi\\.com$",
+            "regexp:^sso-app[0-9]+\\.vtb\\.ru$",
+            "domain:stbid.ru",
+            "domain:1c-bitrix.ru",
+            "domain:1c.ru",
+            "domain:1cfresh.com",
+            "domain:1cloud.ru",
+            "domain:1internet.tv",
+            "domain:300.ya.ru",
+            "domain:47news.ru",
+            "domain:4meeting.me",
+            "domain:5ka.ru",
+            "domain:5post.market",
+            "domain:742231.ms.ok.ru",
+            "domain:8ofpsm7zqu.a.trbcdn.net",
+            "domain:a.auth-nsdi.ru",
+            "domain:a.res-nsdi.ru",
+            "domain:abr.ru",
+            "domain:aclub.ru",
+            "domain:adriver.ru",
+            "domain:gov.ru",
+            "domain:aeroflot.ru",
+            "domain:alformacap.com",
+            "domain:alformacapital.com",
+            "domain:ams2-cdn.2gis.com",
+            "domain:auth-nsdi.ru",
+            "domain:auto.ru",
+            "domain:av.ru",
+            "domain:b.auth-nsdi.ru",
+            "domain:b.res-nsdi.ru",
+            "domain:baltbank.ru",
+            "domain:banka-ui.dev",
+            "domain:banki.ru",
+            "domain:bankline.ru",
+            "domain:flocktory.com",
+            "domain:beta-bank.com",
+            "domain:bitrix24.ru",
+            "domain:boosty.to",
+            "domain:max.ru",
+            "domain:bronevik.com",
+            "domain:mail.ru",
+            "domain:cdn-tinkoff.ru",
+            "domain:lemanapro.ru",
+            "domain:oversecure.org",
+            "domain:uxfeedback.ru",
+            "domain:serverstats.ru",
+            "domain:cdnsix.vk-com.ru",
+            "domain:speedstream.ru",
+            "domain:chizhik.club",
+            "domain:citydrive.ru",
+            "domain:clstorage.net",
+            "domain:mts.ru",
+            "domain:rzd.ru",
+            "domain:yadro.ru",
+            "domain:credistory.ru",
+            "domain:csat.ru",
+            "domain:cscampus.ru",
+            "domain:d-assets.2gis.ru",
+            "domain:d5de4k0ri8jba7ucdbt6.apigw.yandexcloud.net",
+            "domain:dbo-dengi.online",
+            "domain:dellin.ru",
+            "domain:disk.2gis.com",
+            "domain:dixy.ru",
+            "domain:dnevnik.ru",
+            "domain:dns-shop.ru",
+            "domain:dodopizza.ru",
+            "domain:dom.ru",
+            "domain:domclick.ru",
+            "domain:donationalerts.com",
+            "domain:drweb.ru",
+            "domain:e5.ru",
+            "domain:edadeal.io",
+            "domain:edadeal.ru",
+            "domain:vk.com",
+            "domain:targetads.io",
+            "domain:fastvps.ru",
+            "domain:fb-cdn.premier.one",
+            "domain:finuslugi.ru",
+            "domain:fivepost.ru",
+            "domain:fix-price.com",
+            "domain:gazeta.ru",
+            "domain:gazprombank.tech",
+            "domain:gazprompay.ru",
+            "domain:get4click.ru",
+            "domain:gorodpay.ru",
+            "domain:gpb.ru",
+            "domain:gpbmobile.ru",
+            "domain:gpmdi.ru",
+            "domain:hh.ru",
+            "domain:idx5.ru",
+            "domain:imgsmail.ru",
+            "domain:investalfabank.com",
+            "domain:iz.ru",
+            "domain:jivo.ru",
+            "domain:jivochat.com",
+            "domain:jivosite.com",
+            "domain:jsons.injector.3ebra.net",
+            "domain:jua5fcnytm.a.trbcdn.net",
+            "domain:jx5.ru",
+            "domain:kaspersky.com",
+            "domain:kaspersky.ru",
+            "domain:kazanexpress.ru",
+            "domain:kommersant.ru",
+            "domain:kp.ru",
+            "domain:krasyar.ru",
+            "domain:krd.ru",
+            "domain:kuper.ru",
+            "domain:lenta.com",
+            "domain:lenta.ru",
+            "domain:lmru.tech",
+            "domain:magnit-ru.injector.3ebra.net",
+            "domain:magnit.ru",
+            "domain:tinkoff.ru",
+            "domain:megafon.ru",
+            "domain:megamarket.ru",
+            "domain:megamarket.tech",
+            "domain:memealerts.com",
+            "domain:alfabank.ru",
+            "domain:mirpayonline.ru",
+            "domain:miya-news.online",
+            "domain:mm.ru",
+            "domain:mnogolososya.ru",
+            "domain:moex.com",
+            "domain:mtscdn.ru",
+            "domain:mtsdengi.ru",
+            "domain:myapelsin.ru",
+            "domain:mymts.ru",
+            "domain:netmonet.co",
+            "domain:nspk.ru",
+            "domain:okko.sport",
+            "domain:okko.tv",
+            "domain:okolo.app",
+            "domain:oneme.ru",
+            "domain:perekrestok.ru",
+            "domain:rutubelist.ru",
+            "domain:pochta.ru",
+            "domain:userapi.com",
+            "domain:psbank.ru",
+            "domain:psblog.ru",
+            "domain:adhigh.net",
+            "domain:qms.ru",
+            "domain:rambler.ru",
+            "domain:skcrtxr.com",
+            "domain:rbc.ru",
+            "domain:receive-sentry.lmru.tech",
+            "domain:res-nsdi.ru",
+            "domain:rostelecom.ru",
+            "domain:rshb.ru",
+            "domain:rt.ru",
+            "domain:rtbcdn.ru",
+            "domain:russiacalling.com",
+            "domain:rustore.ru",
+            "domain:rzd-bonus.ru",
+            "domain:s3.yandex.net",
+            "domain:sbermarket.ru",
+            "domain:sbermegamarket.ru",
+            "domain:sbermobile.ru",
+            "domain:sbpgpb.ru",
+            "domain:servicepipe.ru",
+            "domain:sistema-capital.com",
+            "domain:spvb.ru",
+            "domain:okcdn.ru",
+            "domain:statad.ru",
+            "domain:beeline.ru",
+            "domain:stats.vk-portal.net",
+            "domain:svoy.academy",
+            "domain:tamtam.chat",
+            "domain:taximaxim.ru",
+            "domain:taxsee.com",
+            "domain:tbank-online.com",
+            "domain:timeweb.cloud",
+            "domain:timeweb.com",
+            "domain:tips.tips",
+            "domain:tns-counter.ru",
+            "domain:tnt-online.ru",
+            "domain:tochka-tech.com",
+            "domain:tochka.com",
+            "domain:top-fwz1.mail.ru",
+            "domain:topdelivery.ru",
+            "domain:yastatic.net",
+            "domain:trbcdn.net",
+            "domain:tsx.x5static.net",
+            "domain:tu-tu.ru",
+            "domain:tutu.ru",
+            "domain:usedesk.ru",
+            "domain:vgtrk.ru",
+            "domain:victoria-group.ru",
+            "domain:volnamobile.ru",
+            "domain:wcm.weborama-tech.ru",
+            "domain:web-static.mindbox.ru",
+            "domain:whoosh.bike",
+            "domain:cbonds.ru",
+            "domain:windsurf.com",
+            "domain:wink.ru",
+            "domain:ws-api.oneme.ru",
+            "domain:vulpine.email",
+            "domain:cikrf.ru",
+            "domain:magnit.com",
+            "domain:x5.ru",
+            "domain:x5.tech",
+            "domain:yota.ru",
+            "domain:youla-web-static.mrgcdn.ru",
+            "domain:youla.io",
+            "domain:youla.ru",
+            "domain:zentotem.net",
+            "domain:xn----7sb7akeedqd.xn--p1ai",
+            "domain:xn--80aacoonefzg3am8b1fsb.xn--p1ai",
+            "domain:xn--90ab2c.xn--p1ai",
+            "domain:xn--90aifd0aza.site",
+            "domain:xn--b1aew.xn--p1ai"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "dns-in"
+          ],
+          "balancerTag": "us-direct-first"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "balancerTag": "us-direct-first"
+        }
+      ],
+      "balancers": [
+        {
+          "tag": "us-direct-first",
+          "selector": [
+            "proxy"
+          ],
+          "strategy": {
+            "type": "leastPing"
+          },
+          "fallbackTag": "us-fallback"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "AsIs"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic",
+            "fakedns"
+          ],
+          "metadataOnly": false
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic",
+            "fakedns"
+          ],
+          "metadataOnly": false
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "us.puflino.com",
+              "port": 8443,
+              "users": [
+                {
+                  "id": "b1539bb6-f7b8-4254-bd3b-32f17d91da9c",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "usa-nf.reddotcorp.org",
+            "publicKey": "7YLtXcQkTEdKyGFmgi42nK73i0ttAP9tcQV12o5Ylyo",
+            "shortId": "9db6b6d13d17987e",
+            "fingerprint": "edge"
+          },
+          "sockopt": {
+            "tcpMaxSeg": 1400,
+            "tcpFastOpen": true,
+            "tcpUserTimeout": 30000,
+            "tcpKeepAliveIdle": 45,
+            "tcpKeepAliveInterval": 15
+          }
+        },
+        "mux": {
+          "enabled": true,
+          "concurrency": -1,
+          "xudpConcurrency": 4,
+          "xudpProxyUDP443": "allow"
+        }
+      },
+      {
+        "tag": "us-fallback",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "103.24.207.43",
+              "port": 8443,
+              "users": [
+                {
+                  "id": "b1539bb6-f7b8-4254-bd3b-32f17d91da9c",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "usa-nf.reddotcorp.org",
+            "publicKey": "7YLtXcQkTEdKyGFmgi42nK73i0ttAP9tcQV12o5Ylyo",
+            "shortId": "9db6b6d13d17987e",
+            "fingerprint": "firefox"
+          },
+          "sockopt": {
+            "tcpMaxSeg": 1400,
+            "tcpFastOpen": true,
+            "tcpUserTimeout": 30000,
+            "tcpKeepAliveIdle": 45,
+            "tcpKeepAliveInterval": 15
+          }
+        },
+        "mux": {
+          "enabled": true,
+          "concurrency": -1,
+          "xudpConcurrency": 4,
+          "xudpProxyUDP443": "allow"
+        }
+      },
+      {
+        "tag": "yt-direct-datacheap",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "103.24.207.43",
+              "port": 444,
+              "users": [
+                {
+                  "id": "b1539bb6-f7b8-4254-bd3b-32f17d91da9c",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "vextor.win",
+            "publicKey": "P7F65GjTQGZju-N8CVHtlKNaWebVe_76Xt7Lm00RuH0",
+            "fingerprint": "firefox"
+          }
+        },
+        "mux": {
+          "enabled": true,
+          "concurrency": -1,
+          "xudpConcurrency": 4,
+          "xudpProxyUDP443": "allow"
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom",
+        "streamSettings": {
+          "sockopt": {
+            "domainStrategy": "ForceIPv4"
+          }
+        }
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole",
+        "settings": {
+          "response": {
+            "type": "http"
+          }
+        }
+      },
+      {
+        "tag": "dns-out",
+        "protocol": "dns"
+      },
+      {
+        "tag": "nf-adguard-dns-out",
+        "protocol": "dns",
+        "settings": {
+          "nonIPQuery": "reject"
+        }
+      }
+    ],
+    "burstObservatory": {
+      "pingConfig": {
+        "timeout": "5s",
+        "interval": "15s",
+        "sampling": 2,
+        "destination": "http://www.gstatic.com/generate_204",
+        "connectivity": ""
+      },
+      "subjectSelector": [
+        "proxy",
+        "us-fallback"
+      ]
+    },
+    "remarks": "🇺🇸 США  🔥",
+    "meta": {
+      "serverDescription": "Для WiFi"
+    }
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "block"
+        },
+        {
+          "type": "field",
+          "domain": [
+            "max.ru",
+            "www.gosuslugi.ru",
+            "geosite:category-ru"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "ip": [
+            "geoip:ru"
+          ],
+          "type": "field",
+          "outboundTag": "direct"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "obxod.servers",
+              "port": 7444,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "on.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "chrome"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "remarks": "⬇️ Обход глушилок"
+  },
+  {
+    "remarks": "⬜ Обход 1",
+    "log": {
+      "loglevel": "warning"
+    },
+    "outbounds": [
+      {
+        "tag": "🇫🇲MICRONESIA",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "santehdv.site",
+              "port": 443,
+              "users": [
+                {
+                  "id": "9ba53795-4356-40ab-8067-76ec2ae2a3d8",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "santehdv.site",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/media/stream/qUWu2oaFgxAw"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      },
+      {
+        "tag": "lte-traffic-exit",
+        "protocol": "shadowsocks",
+        "settings": {
+          "servers": [
+            {
+              "address": "2.56.179.231",
+              "port": 443,
+              "method": "2022-blake3-aes-256-gcm",
+              "password": "0/5R4AwihR/5z2i4jJ6snZFqoe7eMICuqHUbcYtjL5U=:+w9xz9ndwXjcLssd32GVcPRXcBunZaqUNU03Qcdg5js="
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "sockopt": {
+            "dialerProxy": "🇫🇲MICRONESIA"
+          }
+        }
+      }
+    ],
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "userLevel": 8,
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {
+          "userLevel": 8
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "dns": {
+      "queryStrategy": "IPIfNonMatch",
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "skipFallback": false
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundDownlink": true,
+        "statsOutboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "socks",
+            "http"
+          ],
+          "outboundTag": "lte-traffic-exit"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "lte-traffic-exit"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "⬜ Обход 2",
+    "log": {
+      "loglevel": "warning"
+    },
+    "outbounds": [
+      {
+        "tag": "🇸🇪SWEDEN",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "sw2ddk.vault-connect.online",
+              "port": 443,
+              "users": [
+                {
+                  "id": "65b31077-472d-418d-97fc-9172db5cb3e0",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "sw2ddk.vault-connect.online",
+            "publicKey": "N8U2m2WDa2rzHRLlBSgy7nhNMzwjjT2WYrnm4W-kXiM",
+            "fingerprint": "firefox",
+            "shortId": "e6875438b277"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      },
+      {
+        "tag": "lte-traffic-exit",
+        "protocol": "shadowsocks",
+        "settings": {
+          "servers": [
+            {
+              "address": "2.56.179.231",
+              "port": 443,
+              "method": "2022-blake3-aes-256-gcm",
+              "password": "0/5R4AwihR/5z2i4jJ6snZFqoe7eMICuqHUbcYtjL5U=:+w9xz9ndwXjcLssd32GVcPRXcBunZaqUNU03Qcdg5js="
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "sockopt": {
+            "dialerProxy": "🇸🇪SWEDEN"
+          }
+        }
+      }
+    ],
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "userLevel": 8,
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {
+          "userLevel": 8
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "dns": {
+      "queryStrategy": "IPIfNonMatch",
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "skipFallback": false
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundDownlink": true,
+        "statsOutboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "socks",
+            "http"
+          ],
+          "outboundTag": "lte-traffic-exit"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "lte-traffic-exit"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "⬜ Обход 3",
+    "log": {
+      "loglevel": "warning"
+    },
+    "outbounds": [
+      {
+        "tag": "🇫🇲MICRONESIA",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "slivdom-spb.site",
+              "port": 443,
+              "users": [
+                {
+                  "id": "9ba53795-4356-40ab-8067-76ec2ae2a3d8",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "slivdom-spb.site",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/media/stream/3VTlT49iHS1H"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      },
+      {
+        "tag": "lte-traffic-exit",
+        "protocol": "shadowsocks",
+        "settings": {
+          "servers": [
+            {
+              "address": "2.56.179.231",
+              "port": 443,
+              "method": "2022-blake3-aes-256-gcm",
+              "password": "0/5R4AwihR/5z2i4jJ6snZFqoe7eMICuqHUbcYtjL5U=:+w9xz9ndwXjcLssd32GVcPRXcBunZaqUNU03Qcdg5js="
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "sockopt": {
+            "dialerProxy": "🇫🇲MICRONESIA"
+          }
+        }
+      }
+    ],
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "userLevel": 8,
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {
+          "userLevel": 8
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "dns": {
+      "queryStrategy": "IPIfNonMatch",
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "skipFallback": false
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundDownlink": true,
+        "statsOutboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "socks",
+            "http"
+          ],
+          "outboundTag": "lte-traffic-exit"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "lte-traffic-exit"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "⬜ Обход 4",
+    "log": {
+      "loglevel": "warning"
+    },
+    "outbounds": [
+      {
+        "tag": "🇧🇹Noname",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "api.helsolutai.company",
+              "port": 443,
+              "users": [
+                {
+                  "id": "65b31077-472d-418d-97fc-9172db5cb3e0",
+                  "encryption": "none"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "api.helsolutai.company",
+            "fingerprint": "firefox",
+            "alpn": [
+              "http/1.1"
+            ]
+          },
+          "wsSettings": {
+            "path": "/online/api/ws",
+            "headers": {
+              "Host": "api.helsolutai.company"
+            }
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      },
+      {
+        "tag": "lte-traffic-exit",
+        "protocol": "shadowsocks",
+        "settings": {
+          "servers": [
+            {
+              "address": "2.56.179.231",
+              "port": 443,
+              "method": "2022-blake3-aes-256-gcm",
+              "password": "0/5R4AwihR/5z2i4jJ6snZFqoe7eMICuqHUbcYtjL5U=:+w9xz9ndwXjcLssd32GVcPRXcBunZaqUNU03Qcdg5js="
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "sockopt": {
+            "dialerProxy": "🇧🇹Noname"
+          }
+        }
+      }
+    ],
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "userLevel": 8,
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {
+          "userLevel": 8
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "dns": {
+      "queryStrategy": "IPIfNonMatch",
+      "servers": [
+        {
+          "address": "1.1.1.1",
+          "skipFallback": false
+        }
+      ]
+    },
+    "stats": {},
+    "policy": {
+      "system": {
+        "statsOutboundDownlink": true,
+        "statsOutboundUplink": true
+      }
+    },
+    "routing": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct"
+        },
+        {
+          "type": "field",
+          "inboundTag": [
+            "socks",
+            "http"
+          ],
+          "outboundTag": "lte-traffic-exit"
+        },
+        {
+          "type": "field",
+          "network": "tcp,udp",
+          "outboundTag": "lte-traffic-exit"
+        }
+      ]
+    }
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "block"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "luckyping.mcufa.pro",
+              "port": 8443,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "luckyping.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "remarks": "🇩🇪 Обход 5"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "block"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "statics.mcufa.pro",
+              "port": 444,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "statics.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "remarks": "🇩🇪 Обход 6"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "block"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "multiqq.mcufa.pro",
+              "port": 7443,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "multiqq.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "remarks": "🇩🇪 Обход 7"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "block"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "multiqq.mcufa.pro",
+              "port": 445,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "multiqq.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "remarks": "🇩🇪 Обход 8"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "block"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "keshyou.mcufa.pro",
+              "port": 9441,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "keshyou.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "remarks": "🇩🇪 Обход 9"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "block"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "keshyou.mcufa.pro",
+              "port": 9443,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "keshyou.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "remarks": "🇩🇪 Обход 10"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "block"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "keshyou.mcufa.pro",
+              "port": 9445,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "keshyou.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "remarks": "🇩🇪 Обход 11"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "block"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "keshyou.mcufa.pro",
+              "port": 9447,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "tcpSettings": {},
+          "security": "reality",
+          "realitySettings": {
+            "serverName": "keshyou.mcufa.pro",
+            "publicKey": "-P8DgKISSG4jnLuj6ihZDqZs1_zt-juBrhVhTylHiAo",
+            "fingerprint": "firefox"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "remarks": "🇳🇱 Обход 12"
+  },
+  {
+    "dns": {
+      "servers": [
+        "1.1.1.1",
+        "1.0.0.1"
+      ],
+      "queryStrategy": "UseIP"
+    },
+    "routing": {
+      "rules": [
+        {
+          "type": "field",
+          "protocol": [
+            "bittorrent"
+          ],
+          "outboundTag": "block"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "IPIfNonMatch"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "settings": {
+          "udp": true,
+          "auth": "noauth"
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      },
+      {
+        "tag": "http",
+        "port": 10809,
+        "listen": "127.0.0.1",
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "enabled": true,
+          "routeOnly": false,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ]
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "xs70.mcufa.pro",
+              "port": 443,
+              "users": [
+                {
+                  "id": "af5171a0-0b20-4aea-adcd-f13e8217ae28",
+                  "encryption": "none",
+                  "flow": ""
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "xhttp",
+          "xhttpSettings": {
+            "mode": "packet-up",
+            "host": "xs70.mcufa.pro",
+            "path": "/api/v1/minecraft178/sync/",
+            "extra": {
+              "xmux": {
+                "cMaxLifetimeMs": 300000,
+                "cMaxReuseTimes": 100,
+                "maxConcurrency": "16-32",
+                "maxConnections": 0,
+                "hKeepAlivePeriod": 30
+              },
+              "uplinkDataKey": "X-Payload",
+              "uplinkHTTPMethod": "GET",
+              "scMaxEachPostBytes": 4096,
+              "uplinkDataPlacement": "header"
+            }
+          },
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "xs70.mcufa.pro",
+            "enableSessionResumption": false,
+            "fingerprint": "edge",
+            "alpn": [
+              "h2",
+              "http/1.1"
+            ]
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "remarks": "🇳🇱 Обход 13"
+  },
+  {
+    "remarks": "🇷🇺📱 Обход 14",
+    "log": {
+      "loglevel": "error"
+    },
+    "inbounds": [
+      {
+        "tag": "in-x6fck2",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": true
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "188.225.33.141",
+              "port": 443,
+              "users": [
+                {
+                  "id": "ff0b6ba8-bed0-4c4d-bbc9-23af47582615",
+                  "encryption": "none",
+                  "level": 8
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "ws",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "wstg.datasynctrue.online"
+          },
+          "wsSettings": {
+            "path": "/api/connect",
+            "headers": {
+              "Host": "wstg.datasynctrue.online"
+            }
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom",
+        "settings": {
+          "ipsBlocked": []
+        },
+        "streamSettings": {
+          "sockopt": {
+            "domainStrategy": "ForceIP"
+          }
+        }
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole",
+        "settings": {}
+      },
+      {
+        "tag": "dns-out",
+        "protocol": "dns"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "inboundTag": [
+            "domestic_dns"
+          ],
+          "outboundTag": "direct",
+          "type": "field"
+        },
+        {
+          "inboundTag": [
+            "wg_bootstrap_dns"
+          ],
+          "outboundTag": "direct",
+          "type": "field"
+        },
+        {
+          "inboundTag": [
+            "dns"
+          ],
+          "outboundTag": "proxy",
+          "type": "field"
+        },
+        {
+          "port": "53",
+          "outboundTag": "dns-out",
+          "type": "field"
+        }
+      ]
+    },
+    "dns": {
+      "queryStrategy": "UseIP",
+      "tag": "dns",
+      "servers": [
+        "1.1.1.1",
+        "8.8.8.8"
+      ]
+    },
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 4,
+          "handshake": 3,
+          "uplinkOnly": 2,
+          "bufferSize": 3,
+          "statsUserDownlink": false,
+          "statsUserUplink": false,
+          "statsUserOnline": false
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true,
+        "statsOutboundDownlink": true,
+        "statsOutboundUplink": true
+      }
+    },
+    "stats": {}
+  },
+  {
+    "remarks": "🇷🇺📱 Обход 15",
+    "log": {
+      "loglevel": "error"
+    },
+    "inbounds": [
+      {
+        "tag": "in-53rix7",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": true
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "fitindoor.net",
+              "port": 2053,
+              "users": [
+                {
+                  "id": "95a608b6-bff1-4e10-bb61-0a39f221bb7d",
+                  "encryption": "none",
+                  "level": 8
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "xhttp",
+          "security": "tls",
+          "tlsSettings": {
+            "serverName": "fitindoor.net",
+            "fingerprint": "firefox",
+            "alpn": [
+              "h2",
+              "http/1.1"
+            ]
+          },
+          "xhttpSettings": {
+            "path": "/api/v1/upload",
+            "host": "fitindoor.net",
+            "mode": "auto"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom",
+        "settings": {
+          "ipsBlocked": []
+        },
+        "streamSettings": {
+          "sockopt": {
+            "domainStrategy": "ForceIP"
+          }
+        }
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole",
+        "settings": {}
+      },
+      {
+        "tag": "dns-out",
+        "protocol": "dns"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "inboundTag": [
+            "domestic_dns"
+          ],
+          "outboundTag": "direct",
+          "type": "field"
+        },
+        {
+          "inboundTag": [
+            "wg_bootstrap_dns"
+          ],
+          "outboundTag": "direct",
+          "type": "field"
+        },
+        {
+          "inboundTag": [
+            "dns"
+          ],
+          "outboundTag": "proxy",
+          "type": "field"
+        },
+        {
+          "port": "53",
+          "outboundTag": "dns-out",
+          "type": "field"
+        }
+      ]
+    },
+    "dns": {
+      "queryStrategy": "UseIP",
+      "tag": "dns",
+      "servers": [
+        "1.1.1.1",
+        "8.8.8.8"
+      ]
+    },
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 4,
+          "handshake": 3,
+          "uplinkOnly": 2,
+          "bufferSize": 3,
+          "statsUserDownlink": false,
+          "statsUserUplink": false,
+          "statsUserOnline": false
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true,
+        "statsOutboundDownlink": true,
+        "statsOutboundUplink": true
+      }
+    },
+    "stats": {}
+  },
+  {
+    "remarks": "🇷🇺📱 Обход 16",
+    "log": {
+      "loglevel": "error"
+    },
+    "inbounds": [
+      {
+        "tag": "in-w3bxli",
+        "port": 10808,
+        "listen": "127.0.0.1",
+        "protocol": "mixed",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "enabled": true,
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "routeOnly": true
+        }
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "78.159.250.214",
+              "port": 443,
+              "users": [
+                {
+                  "id": "4054fdc2-ee80-4419-8a8e-d937df4719e2",
+                  "encryption": "none",
+                  "level": 8,
+                  "flow": "xtls-rprx-vision"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "reality",
+          "realitySettings": {
+            "show": false,
+            "fingerprint": "random",
+            "serverName": "qq.utiltools.site",
+            "shortId": "00000000",
+            "spiderX": "/",
+            "password": "drY21DHNOr6ezJLA2B10mzTExeJ9-gVBfTBNLwVBtWI",
+            "publicKey": "drY21DHNOr6ezJLA2B10mzTExeJ9-gVBfTBNLwVBtWI"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom",
+        "settings": {
+          "ipsBlocked": []
+        },
+        "streamSettings": {
+          "sockopt": {
+            "domainStrategy": "ForceIP"
+          }
+        }
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole",
+        "settings": {}
+      },
+      {
+        "tag": "dns-out",
+        "protocol": "dns"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "inboundTag": [
+            "domestic_dns"
+          ],
+          "outboundTag": "direct",
+          "type": "field"
+        },
+        {
+          "inboundTag": [
+            "wg_bootstrap_dns"
+          ],
+          "outboundTag": "direct",
+          "type": "field"
+        },
+        {
+          "inboundTag": [
+            "dns"
+          ],
+          "outboundTag": "proxy",
+          "type": "field"
+        },
+        {
+          "port": "53",
+          "outboundTag": "dns-out",
+          "type": "field"
+        }
+      ]
+    },
+    "dns": {
+      "queryStrategy": "UseIP",
+      "tag": "dns",
+      "servers": [
+        "1.1.1.1",
+        "8.8.8.8"
+      ]
+    },
+    "policy": {
+      "levels": {
+        "8": {
+          "connIdle": 300,
+          "downlinkOnly": 4,
+          "handshake": 3,
+          "uplinkOnly": 2,
+          "bufferSize": 3,
+          "statsUserDownlink": false,
+          "statsUserUplink": false,
+          "statsUserOnline": false
+        }
+      },
+      "system": {
+        "statsInboundDownlink": true,
+        "statsInboundUplink": true,
+        "statsOutboundDownlink": true,
+        "statsOutboundUplink": true
+      }
+    },
+    "stats": {}
+  }
+]
