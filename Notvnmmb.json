@@ -1,3 +1,5 @@
+#profile-update-interval: 12
+#profile-title: cold vpn
 [
   {
     "dns": {
